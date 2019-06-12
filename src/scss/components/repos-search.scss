@@ -1,0 +1,59 @@
+.repos-search {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: 80px 35px;
+  grid-gap: 15px;
+  grid-auto-flow: row;
+
+  &__name-field {
+    display: grid;
+    grid-column-start: 5;
+    grid-column-end: 9;
+    grid-row-start: 1;
+    grid-template-columns: repeat(7, 1fr);
+    grid-gap: 0.5vw;
+
+    & > input {
+      grid-column-start: 1;
+      grid-column-end: 6;
+      border: none;
+      align-self: center;
+      height: 50%;
+      border-bottom: 1px solid #acacac;
+      font-size: 18px;
+      padding: 8px;
+    }
+
+    & > button {
+      grid-column-start: 6;
+      grid-column-end: 8;
+      height: 50%;
+      align-self: center;
+      color: #fff;
+      background-color: #070606b6;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  }
+
+  &__type-filter {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+
+    & > select {
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      height: 100%;
+      font-family: "Open Sans";
+      color: #fff;
+      background-color: #070606b6;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}

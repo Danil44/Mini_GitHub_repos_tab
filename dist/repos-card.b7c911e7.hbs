@@ -1,0 +1,12 @@
+<li class="search-result__item">
+    <h3 class="search-result__repos-name">{{name}}</h3>
+    <span>{{stars}}</span>
+    <p class="search-result__desc">{{desc}}</p>
+    <ul>
+        <li>{{language}}</li>
+        {{#if fork}}
+        <li>fork</li>
+        {{/if}}
+        <li>Updated: {{updatedDate}}</li>
+    </ul>
+</li>

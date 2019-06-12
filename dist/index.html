@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/styles.5c8f3eab.css">
+    <title>Document</title>
+<script src="/styles.5c8f3eab.js"></script></head>
+
+<body>
+    <main>
+        <section class="repos-search js-repo-search-container">
+            <form action="GET" class="repos-search__name-field js-search-form"><input type="text" name="name"><button type="submit">Search</button>
+            </form>
+            <form action="GET" class="repos-search__type-filter js-repo-type-filter">
+                <select name="type">
+                    <option value="all" selected="">All</option>
+                    <option value="forks">Forks</option>
+                </select>
+            </form>
+            <section class="search-result">
+                <ul class="search-result__list js-search-result">
+                    <!-- Will be compiled with Handlebars -->
+                </ul>
+                <button type="button" class="hidden search-result__pagination-btn js-repos-pagination">Load
+                    more</button>
+            </section>
+        </section>
+        <script type="hbs/template" id="searched-repos-item">
+    <li class="search-result__item">
+        <h3><a target="_blank" href={{{ownerUrl}}}>{{owner}}</a> / <a target="_blank" href={{{repoUrl}}}>{{name}}</a></h3>
+        {{#if fork}}
+        <span>fork</span>
+        {{/if}}
+        {{#if fork}}
+        <p class="search-result__desc">{{description}}</p>
+        {{/if}}
+        <ul>
+            {{#if language}}
+            <li>{{language}}</li>
+            {{/if}}
+            <li datetime={{originalDate}}>Updated {{updatedDate}}</li>
+        </ul>
+    </li>
+</script>
+
+    </main>
+    <script src="/js.00a46daa.js">
+    </script>
+</body>
+
+</html>
