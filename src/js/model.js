@@ -3,39 +3,60 @@ export default class Model {
   constructor() {
     this.pageToPaginate = 1;
     this.searchName = "";
-    this.searchReposData = [];
-    this.selectedType = "all";
+    this.fetchedRepos = [];
+    this.reposList = [];
+    this.filter = {
+      type: ""
+    };
+    this.sortOption = "";
   }
 
-  fetchRepos(username) {
-    this.searchName = username;
-
-    return fetchRepos(this.searchName).then(data => {
-      this.searchReposData = data;
-      return this.filterWithType(this.selectedType);
+  fetchRepos(name) {
+    this.searchName = name;
+    return fetchRepos(name).then(data => {
+      this.fetchedRepos = data;
+      this.reposList = data;
+      return data;
     });
   }
 
   paginateRepos() {
-    if (this.searchName)
-      return fetchRepos(this.searchName, (this.pageToPaginate += 1)).then(
-        data => {
-          data.forEach(item => {
-            this.searchReposData.push(item);
-          });
-
-          return this.filterWithType(this.selectedType);
-        }
-      );
+    return fetchRepos(this.searchName, (this.pageToPaginate += 1)).then(
+      nextData => {
+        this.fetchedRepos.push(...nextData);
+        return this.reposList;
+      }
+    );
   }
 
-  filterWithType(type) {
-    this.selectedType = type;
-    return new Promise((resolve, reject) => {
+  filterWithType(type = "all") {
+    this.filter.type = type;
+    return new Promise((res, rej) => {
       if (type === "forks") {
-        resolve(this.searchReposData.filter(item => item.fork));
+        res((this.reposList = this.reposList.filter(item => item.fork)));
+      } else {
+        this.reposList = this.fetchedRepos;
+        res(this.fetchedRepos);
       }
-      resolve(this.searchReposData);
     });
+  }
+
+  sortReposList(option) {
+    return this.filterWithType(this.filter.type).then(data => {
+      this.sortOption = option;
+      if (option !== this.sortOption) {
+        return data.sort((a, b) =>
+          String(a[option]).toUpperCase() > String(b[option]).toUpperCase()
+            ? 1
+            : -1
+        );
+      } else {
+        return data;
+      }
+    });
+  }
+
+  reverseReposList() {
+    return this.reposList.reverse();
   }
 }

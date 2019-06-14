@@ -1851,7 +1851,7 @@ var url = function url(name) {
 var paginate = function paginate() {
   var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
   return {
-    next: "?page=".concat(page, "&per_page=6")
+    next: "?page=".concat(page, "&per_page=12")
   };
 };
 
@@ -1898,6 +1898,14 @@ exports.default = void 0;
 
 var _fetch = require("./services/fetch");
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -1912,19 +1920,24 @@ function () {
 
     this.pageToPaginate = 1;
     this.searchName = "";
-    this.searchReposData = [];
-    this.selectedType = "all";
+    this.fetchedRepos = [];
+    this.reposList = [];
+    this.filter = {
+      type: ""
+    };
+    this.sortOption = "";
   }
 
   _createClass(Model, [{
     key: "fetchRepos",
-    value: function fetchRepos(username) {
+    value: function fetchRepos(name) {
       var _this = this;
 
-      this.searchName = username;
-      return (0, _fetch.fetchRepos)(this.searchName).then(function (data) {
-        _this.searchReposData = data;
-        return _this.filterWithType(_this.selectedType);
+      this.searchName = name;
+      return (0, _fetch.fetchRepos)(name).then(function (data) {
+        _this.fetchedRepos = data;
+        _this.reposList = data;
+        return data;
       });
     }
   }, {
@@ -1932,28 +1945,53 @@ function () {
     value: function paginateRepos() {
       var _this2 = this;
 
-      if (this.searchName) return (0, _fetch.fetchRepos)(this.searchName, this.pageToPaginate += 1).then(function (data) {
-        data.forEach(function (item) {
-          _this2.searchReposData.push(item);
-        });
-        return _this2.filterWithType(_this2.selectedType);
+      return (0, _fetch.fetchRepos)(this.searchName, this.pageToPaginate += 1).then(function (nextData) {
+        var _this2$fetchedRepos;
+
+        (_this2$fetchedRepos = _this2.fetchedRepos).push.apply(_this2$fetchedRepos, _toConsumableArray(nextData));
+
+        return _this2.reposList;
       });
     }
   }, {
     key: "filterWithType",
-    value: function filterWithType(type) {
+    value: function filterWithType() {
       var _this3 = this;
 
-      this.selectedType = type;
-      return new Promise(function (resolve, reject) {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "all";
+      this.filter.type = type;
+      return new Promise(function (res, rej) {
         if (type === "forks") {
-          resolve(_this3.searchReposData.filter(function (item) {
+          res(_this3.reposList = _this3.reposList.filter(function (item) {
             return item.fork;
           }));
+        } else {
+          _this3.reposList = _this3.fetchedRepos;
+          res(_this3.fetchedRepos);
         }
-
-        resolve(_this3.searchReposData);
       });
+    }
+  }, {
+    key: "sortReposList",
+    value: function sortReposList(option) {
+      var _this4 = this;
+
+      return this.filterWithType(this.filter.type).then(function (data) {
+        _this4.sortOption = option;
+
+        if (option !== _this4.sortOption) {
+          return data.sort(function (a, b) {
+            return String(a[option]).toUpperCase() > String(b[option]).toUpperCase() ? 1 : -1;
+          });
+        } else {
+          return data;
+        }
+      });
+    }
+  }, {
+    key: "reverseReposList",
+    value: function reverseReposList() {
+      return this.reposList.reverse();
     }
   }]);
 
@@ -12110,6 +12148,7 @@ function (_EventEmitter) {
     _this.searchForm = _this.reposSearchContainer.querySelector(".js-search-form");
     _this.reposPaginationBtn = _this.reposSearchContainer.querySelector(".js-repos-pagination");
     _this.filterForm = _this.reposSearchContainer.querySelector(".js-repo-type-filter");
+    _this.sortForm = _this.reposSearchContainer.querySelector(".js-repo-sort");
 
     _this.handleAddEventListener();
 
@@ -12122,6 +12161,7 @@ function (_EventEmitter) {
       this.searchForm.addEventListener("submit", this.handleFetchRepos.bind(this));
       this.reposPaginationBtn.addEventListener("click", this.handlePagination.bind(this));
       this.filterForm.addEventListener("click", this.handleFilterWithType.bind(this));
+      this.sortForm.addEventListener("click", this.handleSortReposList.bind(this));
     }
   }, {
     key: "handleFetchRepos",
@@ -12169,7 +12209,7 @@ function (_EventEmitter) {
       }, "");
       container.insertAdjacentHTML("afterbegin", markup);
 
-      if (data.length === 6) {
+      if (data.length === 12) {
         showPaginationBtn();
       } else {
         hidePaginationBtn();
@@ -12190,6 +12230,19 @@ function (_EventEmitter) {
     value: function handleFilterWithType(evt) {
       var type = evt.target.value;
       this.emit("type-filter", type);
+    }
+  }, {
+    key: "handleSortReposList",
+    value: function handleSortReposList(evt) {
+      var _evt$target = evt.target,
+          nodeName = _evt$target.nodeName,
+          option = _evt$target.value;
+
+      if (nodeName === "SELECT") {
+        this.emit("sort", option);
+      } else if (nodeName === "IMG") {
+        this.emit("reverse");
+      }
     }
   }]);
 
@@ -20243,17 +20296,21 @@ function (_EventEmitter) {
     view.on("fetch", _this.fetchRepos.bind(_assertThisInitialized(_this)));
     view.on("paginate", _this.paginateRepos.bind(_assertThisInitialized(_this)));
     view.on("type-filter", _this.filterWithType.bind(_assertThisInitialized(_this)));
+    view.on("sort", _this.sortReposList.bind(_assertThisInitialized(_this)));
+    view.on("reverse", _this.reverseReposList.bind(_assertThisInitialized(_this)));
     return _this;
   }
 
   _createClass(Controller, [{
     key: "fetchRepos",
-    value: function fetchRepos(username) {
+    value: function fetchRepos(name) {
       var _this2 = this;
 
-      this.model.fetchRepos(username).then(function (data) {
-        return _this2.view.showFoundRepos(data);
-      });
+      if (name) {
+        this.model.fetchRepos(name).then(function (data) {
+          return _this2.view.showFoundRepos(data);
+        });
+      }
     }
   }, {
     key: "paginateRepos",
@@ -20271,9 +20328,22 @@ function (_EventEmitter) {
 
       this.model.filterWithType(type).then(function (data) {
         return _this4.view.showFoundRepos(data);
-      }).catch(function (err) {
-        return console.log(err);
       });
+    }
+  }, {
+    key: "sortReposList",
+    value: function sortReposList(option) {
+      var _this5 = this;
+
+      this.model.sortReposList(option).then(function (data) {
+        return _this5.view.showFoundRepos(data);
+      });
+    }
+  }, {
+    key: "reverseReposList",
+    value: function reverseReposList() {
+      var reversedData = this.model.reverseReposList();
+      if (reversedData.length) this.view.showFoundRepos(reversedData);
     }
   }]);
 
@@ -20323,7 +20393,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50220" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49927" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -4,7 +4,7 @@
         {{#if fork}}
         <span>fork</span>
         {{/if}}
-        {{#if fork}}
+        {{#if description}}
         <p class="search-result__desc">{{description}}</p>
         {{/if}}
         <ul>
@@ -12,6 +12,9 @@
             <li>{{language}}</li>
             {{/if}}
             <li datetime={{originalDate}}>Updated {{updatedDate}}</li>
+            {{#if stars}}
+            <li datetime={{originalDate}}>Stars {{stars}}</li>
+            {{/if}}
         </ul>
     </li>
 </script>

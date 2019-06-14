@@ -11,12 +11,14 @@ export default class Controller extends EventEmitter {
     view.on("fetch", this.fetchRepos.bind(this));
     view.on("paginate", this.paginateRepos.bind(this));
     view.on("type-filter", this.filterWithType.bind(this));
+    view.on("sort", this.sortReposList.bind(this));
+    view.on("reverse", this.reverseReposList.bind(this));
   }
 
-  fetchRepos(username) {
-    this.model
-      .fetchRepos(username)
-      .then(data => this.view.showFoundRepos(data));
+  fetchRepos(name) {
+    if (name) {
+      this.model.fetchRepos(name).then(data => this.view.showFoundRepos(data));
+    }
   }
 
   paginateRepos() {
@@ -26,7 +28,17 @@ export default class Controller extends EventEmitter {
   filterWithType(type) {
     this.model
       .filterWithType(type)
-      .then(data => this.view.showFoundRepos(data))
-      .catch(err => console.log(err));
+      .then(data => this.view.showFoundRepos(data));
+  }
+
+  sortReposList(option) {
+    this.model
+      .sortReposList(option)
+      .then(data => this.view.showFoundRepos(data));
+  }
+
+  reverseReposList() {
+    const reversedData = this.model.reverseReposList();
+    if (reversedData.length) this.view.showFoundRepos(reversedData);
   }
 }

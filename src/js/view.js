@@ -21,6 +21,7 @@ export default class View extends EventEmitter {
       ".js-repo-type-filter"
     );
 
+    this.sortForm = this.reposSearchContainer.querySelector(".js-repo-sort");
     this.handleAddEventListener();
   }
 
@@ -36,6 +37,10 @@ export default class View extends EventEmitter {
     this.filterForm.addEventListener(
       "click",
       this.handleFilterWithType.bind(this)
+    );
+    this.sortForm.addEventListener(
+      "click",
+      this.handleSortReposList.bind(this)
     );
   }
 
@@ -97,7 +102,7 @@ export default class View extends EventEmitter {
 
     container.insertAdjacentHTML("afterbegin", markup);
 
-    if (data.length === 6) {
+    if (data.length === 12) {
       showPaginationBtn();
     } else {
       hidePaginationBtn();
@@ -120,5 +125,14 @@ export default class View extends EventEmitter {
     const { value: type } = evt.target;
 
     this.emit("type-filter", type);
+  }
+
+  handleSortReposList(evt) {
+    const { nodeName, value: option } = evt.target;
+    if (nodeName === "SELECT") {
+      this.emit("sort", option);
+    } else if (nodeName === "IMG") {
+      this.emit("reverse");
+    }
   }
 }

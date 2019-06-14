@@ -16,10 +16,19 @@
                     type="submit">Search</button>
             </form>
             <form action="GET" class="repos-search__type-filter js-repo-type-filter">
+                <span>Filter</span>
                 <select name="type">
                     <option value="all" selected>All</option>
                     <option value="forks">Forks</option>
                 </select>
+            </form>
+            <form action="GET" class="repos-search__sort js-repo-sort">
+                <span>Sort by</span>
+                <select name="type">
+                    <option value="name" selected>Repository name</option>
+                    <option value="stars">Stars count</option>
+                </select>
+                <img class="sort-btn js-sort-btn" src="./img/sort.svg" alt="sort-btn">
             </form>
             <section class="search-result">
                 <ul class="search-result__list js-search-result">

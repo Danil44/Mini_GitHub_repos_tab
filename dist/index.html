@@ -15,10 +15,19 @@
             <form action="GET" class="repos-search__name-field js-search-form"><input type="text" name="name"><button type="submit">Search</button>
             </form>
             <form action="GET" class="repos-search__type-filter js-repo-type-filter">
+                <span>Filter</span>
                 <select name="type">
                     <option value="all" selected="">All</option>
                     <option value="forks">Forks</option>
                 </select>
+            </form>
+            <form action="GET" class="repos-search__sort js-repo-sort">
+                <span>Sort by</span>
+                <select name="type">
+                    <option value="name" selected="">Repository name</option>
+                    <option value="stars">Stars count</option>
+                </select>
+                <img class="sort-btn js-sort-btn" src="/sort.6e1d0bab.svg" alt="sort-btn">
             </form>
             <section class="search-result">
                 <ul class="search-result__list js-search-result">
@@ -34,7 +43,7 @@
         {{#if fork}}
         <span>fork</span>
         {{/if}}
-        {{#if fork}}
+        {{#if description}}
         <p class="search-result__desc">{{description}}</p>
         {{/if}}
         <ul>
@@ -42,6 +51,9 @@
             <li>{{language}}</li>
             {{/if}}
             <li datetime={{originalDate}}>Updated {{updatedDate}}</li>
+            {{#if stars}}
+            <li datetime={{originalDate}}>Stars {{stars}}</li>
+            {{/if}}
         </ul>
     </li>
 </script>

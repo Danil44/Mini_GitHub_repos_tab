@@ -5,7 +5,7 @@ const url = name => ({
 });
 
 const paginate = (page = 1) => ({
-  next: `?page=${page}&per_page=6`
+  next: `?page=${page}&per_page=12`
 });
 
 const mapper = data => {
