@@ -6,7 +6,7 @@
   "scripts": {
     "start": "parcel serve src/index.html --port 1234",
     "start:browsersync": "browser-sync start --proxy 'localhost:1234' --watch --files 'dist'",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html --public-url ./"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,7 @@
     "babel-core": "^6.26.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "cssnano": "^4.1.10",
+    "gh-pages": "^2.0.1",
     "posthtml-include": "^1.2.0",
     "sass": "^1.21.0"
   }
