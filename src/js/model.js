@@ -1,4 +1,5 @@
 import { fetchRepos } from "./services/fetch";
+import * as sort from "./services/sort";
 export default class Model {
   constructor() {
     this.pageToPaginate = 1;
@@ -8,7 +9,7 @@ export default class Model {
     this.filter = {
       type: ""
     };
-    this.sortOption = "";
+    this.sortOption = "name";
   }
 
   fetchRepos(name) {
@@ -42,18 +43,19 @@ export default class Model {
   }
 
   sortReposList(option) {
-    return this.filterWithType(this.filter.type).then(data => {
+    if (option !== this.sortOption) {
       this.sortOption = option;
-      if (option !== this.sortOption) {
-        return data.sort((a, b) =>
-          String(a[option]).toUpperCase() > String(b[option]).toUpperCase()
-            ? 1
-            : -1
-        );
-      } else {
-        return data;
+      switch (option) {
+        case "name":
+          return sort.sortStrings(this.reposList, "name");
+        case "stars":
+          sort.sortNumbers(this.reposList, "stars");
+        default:
+          return this.reposList;
       }
-    });
+    } else {
+      return this.reposList;
+    }
   }
 
   reverseReposList() {

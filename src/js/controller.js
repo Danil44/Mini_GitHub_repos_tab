@@ -32,9 +32,8 @@ export default class Controller extends EventEmitter {
   }
 
   sortReposList(option) {
-    this.model
-      .sortReposList(option)
-      .then(data => this.view.showFoundRepos(data));
+    const sortedList = this.model.sortReposList(option);
+    this.view.showFoundRepos(sortedList);
   }
 
   reverseReposList() {
